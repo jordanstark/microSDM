@@ -61,26 +61,27 @@ bioclim_2.5m_sp$pt_type <- micro_sp$pt_type
 # temperature values are *10, correcting
 bioclim_30s_sp$bio1 <- bioclim_30s_sp$bio1/10
 bioclim_30s_sp$bio2 <- bioclim_30s_sp$bio2/10
-bioclim_30s_sp$bio3 <- bioclim_30s_sp$bio3/100 #bio 3 and 4 are x100
-bioclim_30s_sp$bio4 <- bioclim_30s_sp$bio4/100
+bioclim_30s_sp$bio3 <- bioclim_30s_sp$bio3 #same units
+bioclim_30s_sp$bio4 <- bioclim_30s_sp$bio4/10
 bioclim_30s_sp$bio5 <- bioclim_30s_sp$bio5/10
 bioclim_30s_sp$bio6 <- bioclim_30s_sp$bio6/10
 bioclim_30s_sp$bio7 <- bioclim_30s_sp$bio7/10
 bioclim_30s_sp$bio8 <- bioclim_30s_sp$bio8/10
 bioclim_30s_sp$bio9 <- bioclim_30s_sp$bio9/10
 bioclim_30s_sp$bio10 <- bioclim_30s_sp$bio10/10
+bioclim_30s_sp$bio11 <- bioclim_30s_sp$bio11/10
 
 bioclim_2.5m_sp$bio1 <- bioclim_2.5m_sp$bio1/10
 bioclim_2.5m_sp$bio2 <- bioclim_2.5m_sp$bio2/10
-bioclim_2.5m_sp$bio3 <- bioclim_2.5m_sp$bio3/100 #bio 3 and 4 are x100
-bioclim_2.5m_sp$bio4 <- bioclim_2.5m_sp$bio4/100
+bioclim_2.5m_sp$bio3 <- bioclim_2.5m_sp$bio3
+bioclim_2.5m_sp$bio4 <- bioclim_2.5m_sp$bio4/10
 bioclim_2.5m_sp$bio5 <- bioclim_2.5m_sp$bio5/10
 bioclim_2.5m_sp$bio6 <- bioclim_2.5m_sp$bio6/10
 bioclim_2.5m_sp$bio7 <- bioclim_2.5m_sp$bio7/10
 bioclim_2.5m_sp$bio8 <- bioclim_2.5m_sp$bio8/10
 bioclim_2.5m_sp$bio9 <- bioclim_2.5m_sp$bio9/10
 bioclim_2.5m_sp$bio10 <- bioclim_2.5m_sp$bio10/10
-
+bioclim_2.5m_sp$bio11 <- bioclim_2.5m_sp$bio11/10
 
 
 micro_long <- pivot_longer(micro_sp@data,cols=starts_with("bio"),values_to="micro_value",names_to="biovar")
@@ -134,14 +135,14 @@ longer_dat <- pivot_longer(all_dat,cols=c("micro_value","bio_30s_value","bio_2.5
                            names_to="scale",values_to="value")
 
 longer_dat <- data.frame(longer_dat)
-longer_dat$scale[longer_dat$scale=="micro_value"] <- "micro"
-longer_dat$scale[longer_dat$scale=="bio_30s_value"] <- "macro"
-longer_dat$scale[longer_dat$scale=="bio_2.5m_value"] <- "regional"
+longer_dat$scale[longer_dat$scale=="micro_value"] <- "30 m"
+longer_dat$scale[longer_dat$scale=="bio_30s_value"] <- "1 km"
+longer_dat$scale[longer_dat$scale=="bio_2.5m_value"] <- "8 km"
 
-longer_dat$scale <- factor(longer_dat$scale,levels=c("regional","macro","micro"),ordered=T)
+longer_dat$scale <- factor(longer_dat$scale,levels=c("8 km","1 km","30 m"),ordered=T)
 
 
-se <- function(x) {mean(x,na.rm=T)/sum(!is.na(x))}
+se <- function(x) {sd(x,na.rm=T)/sqrt(sum(!is.na(x)))}
 
 byvar <- split(longer_dat,longer_dat$biovar)
 plots <- list()
@@ -225,7 +226,8 @@ for(i in which(stat.sig$pls.intxn == T)) {
                           scale_color_manual(values=c("black","deeppink")) +
                           theme_classic() +
                           xlab("") + ylab(paste(dat$text_name[1])) +
-                          theme(legend.position="none")
+                          theme(legend.position="none")+
+                          theme(legend.position="none",text=element_text(size=20))
   
   iter <- iter+1
                             
@@ -253,14 +255,13 @@ for(i in which(stat.sig$rbs.intxn == T)) {
     scale_color_manual(values=c("black","red2")) +
     theme_classic() +
     xlab("") + ylab(paste(dat$text_name[1])) +
-    theme(legend.position="none")
+    theme(legend.position="none",text=element_text(size=20))
   
   iter <- iter+1
   
   
 }
 
-all_plots <- list(pls.plots,rbs.plots)
 
 wrap_plots(plots,nrow=2)
 
